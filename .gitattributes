@@ -1,2 +1,71 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+import requests
+
+# Replace with your access token
+ACCESS_TOKEN = "EAAPlSSixUWABOyahBIe62JuTFTvRbstR5bZAcZCtlKSZBGXCeB9aRkrOWwsKZBDUvZCZCvTKn6w8UEdUSvWpZA2vpRvzfZA1b8rT1ICMdkBtWEPIzOlsjG8Dvs3LcS6aAPl5hKxlBiU1Hc7xS3SFSyemojNOaqeL8bZA7D0Y4EsBd4XveVbBDtpNbXeAvLCZAeecorf6c496KZC5MldMVZCwuHOHkFn69KhMAfyQA0fTghfjFHNIZBhbAKDiPHKUAdDiwNUSZB5hMopwZDZD"
+
+def fetch_facebook_data():
+    user_id = entry.get()
+    if not user_id:
+        messagebox.showerror("Error", "Please enter a Facebook User ID!")
+        return
+
+    # Graph API URL to fetch user data
+    url = f"https://graph.facebook.com/v12.0/{user_id}"
+    params = {
+        "fields": "name,id,friends.limit(1).summary(true),posts.limit(5){message,created_time}",
+        "access_token": ACCESS_TOKEN,
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()  # Raise exception for bad status codes
+        data = response.json()
+
+        # Display user stats
+        name = data.get("name", "N/A")
+        user_id = data.get("id", "N/A")
+        friends_count = data.get("friends", {}).get("summary", {}).get("total_count", "N/A")
+        posts = data.get("posts", {}).get("data", [])
+
+        posts_text = "\n".join(
+            [f"- {post['message'][:50]}... ({post['created_time']})" for post in posts if "message" in post]
+        )
+
+        result_text = (
+            f"Name: {name}\n"
+            f"User ID: {user_id}\n"
+            f"Friends: {friends_count}\n\n"
+            f"Recent Posts:\n{posts_text if posts else 'No recent posts available.'}"
+        )
+        result_label.config(text=result_text)
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("Error", f"Failed to fetch data: {e}")
+    except KeyError:
+        messagebox.showerror("Error", "Invalid response from API. Check User ID or token.")
+
+# GUI setup
+root = tk.Tk()
+root.title("Facebook Account Stats")
+root.geometry("500x400")
+
+frame = ttk.Frame(root, padding=10)
+frame.pack(fill="both", expand=True)
+
+# User input
+label = ttk.Label(frame, text="Enter Facebook User ID:")
+label.pack(pady=5)
+
+entry = ttk.Entry(frame, width=30)
+entry.pack(pady=5)
+
+fetch_button = ttk.Button(frame, text="Fetch Data", command=fetch_facebook_data)
+fetch_button.pack(pady=10)
+
+# Result display
+result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 10), wraplength=450, justify="left")
+result_label.pack(pady=10, fill="both", expand=True)
+
+root.mainloop()
