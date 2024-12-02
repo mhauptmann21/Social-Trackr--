@@ -2,9 +2,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import requests
-import breezypythongui 
+import breezypythongui
+
 # Replace with your access token
-ACCESS_TOKEN = "EAAPlSSixUWABOZBCoXxlfZA7UawvY4yszud2zAQ9EEw6ApO6cwxIi32LMDrf0OcqOM5JIMPxVVr9kwKBhVgZBXy8xJrhmgmsRrZCx9b4lmZCDSvZBoxOqukJqmDGyeTi2uzYZB1DWtTdxFn8OfrvUrrqTbnAOGeNJmWpf2sU8atKcUaD6yPgOgZBDWQmLPF3KiG9VEFiCkLFtbTZCNFGnF6jjZB2ZBihXQFgp2qrmNSAqHZB70CYqz9uzTFFYPrHC4mHVykpG0fkrAZDZD"
+ACCESS_TOKEN = "EAAPlSSixUWABO008nY1xRO2oHcEyLKNaGzLynI1V9GGBikrgNiU30euzONa8LiTZCpInVegzKpO52ZA18FEs0kV2nHgX3WJHIcFMZB7TxJt4oFJ0oKedqAtZCm3Q4pklISvjkZAZCnl7zOpR1GIcJ5Coru1ynZABdZBdPMTJ5Um2ZCT5qK9p8DPZCymh6VVZCQqFw7QkXTg6CY2NWR7U3daXl8y4BHUvVswkrG30olb4ZAh2eEC3RJPAUZC58cVe1IdhXpOGmLG9hY4kZD"
 
 def fetch_facebook_data():
     user_id = entry.get()
@@ -54,29 +55,27 @@ root.geometry("500x400")
 frame = ttk.Frame(root, padding=10)
 frame.pack(fill="both", expand=True)
 
-
-
 # User input
-label = ttk.Label(frame, text="Enter Facebook User ID:")
+label = ttk.Label(frame, text="Enter User ID:")
 label.pack(pady=5)
 
 entry = ttk.Entry(frame, width=30)
 entry.pack(pady=5)
 
-menuBar = ttk.menuBar (self, row, column, rowspan = 1, columnspan = 1, orient = "horizontal")
-"""Creates and inserts a menu bar at the row and column, and returns the menu bar."""
-if not orient in ("horizontal", "vertical"):
-    raise ValueError("orient must be horizontal or vertical")
-    menuBar = EasyMenuBar(self, orient)
-    menuBar.grid(row = row, column = column,
-    rowspan = rowspan, columnspan = columnspan,
-    sticky = N+W)
+"""menuBar = ttk.Menubutton(frame, text="More...")
+menuBar.pack(pady=10)"""
+frame.pack()
+langs = ["Facebook", "Instagram", "Tiktok",
+   "X"]
+Combo = ttk.Combobox(frame, values = langs)
+Combo.set("Pick an Option")
+Combo.pack(padx = 5, pady = 5)
+
 fetch_button = ttk.Button(frame, text="Fetch Data", command=fetch_facebook_data)
 fetch_button.pack(pady=10)
 
-
 # Result display
-result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 20), wraplength=450, justify="left")
+result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 30), wraplength=450, justify="left")
 result_label.pack(pady=10, fill="both", expand=True)
 
 root.mainloop()
