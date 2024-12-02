@@ -2,9 +2,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import requests
-
+import breezypythongui 
 # Replace with your access token
-ACCESS_TOKEN = "EAAPlSSixUWABOyahBIe62JuTFTvRbstR5bZAcZCtlKSZBGXCeB9aRkrOWwsKZBDUvZCZCvTKn6w8UEdUSvWpZA2vpRvzfZA1b8rT1ICMdkBtWEPIzOlsjG8Dvs3LcS6aAPl5hKxlBiU1Hc7xS3SFSyemojNOaqeL8bZA7D0Y4EsBd4XveVbBDtpNbXeAvLCZAeecorf6c496KZC5MldMVZCwuHOHkFn69KhMAfyQA0fTghfjFHNIZBhbAKDiPHKUAdDiwNUSZB5hMopwZDZD"
+ACCESS_TOKEN = "EAAPlSSixUWABOZBCoXxlfZA7UawvY4yszud2zAQ9EEw6ApO6cwxIi32LMDrf0OcqOM5JIMPxVVr9kwKBhVgZBXy8xJrhmgmsRrZCx9b4lmZCDSvZBoxOqukJqmDGyeTi2uzYZB1DWtTdxFn8OfrvUrrqTbnAOGeNJmWpf2sU8atKcUaD6yPgOgZBDWQmLPF3KiG9VEFiCkLFtbTZCNFGnF6jjZB2ZBihXQFgp2qrmNSAqHZB70CYqz9uzTFFYPrHC4mHVykpG0fkrAZDZD"
 
 def fetch_facebook_data():
     user_id = entry.get()
@@ -54,6 +54,8 @@ root.geometry("500x400")
 frame = ttk.Frame(root, padding=10)
 frame.pack(fill="both", expand=True)
 
+
+
 # User input
 label = ttk.Label(frame, text="Enter Facebook User ID:")
 label.pack(pady=5)
@@ -61,11 +63,20 @@ label.pack(pady=5)
 entry = ttk.Entry(frame, width=30)
 entry.pack(pady=5)
 
+menuBar = ttk.menuBar (self, row, column, rowspan = 1, columnspan = 1, orient = "horizontal")
+"""Creates and inserts a menu bar at the row and column, and returns the menu bar."""
+if not orient in ("horizontal", "vertical"):
+    raise ValueError("orient must be horizontal or vertical")
+    menuBar = EasyMenuBar(self, orient)
+    menuBar.grid(row = row, column = column,
+    rowspan = rowspan, columnspan = columnspan,
+    sticky = N+W)
 fetch_button = ttk.Button(frame, text="Fetch Data", command=fetch_facebook_data)
 fetch_button.pack(pady=10)
 
+
 # Result display
-result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 10), wraplength=450, justify="left")
+result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 20), wraplength=450, justify="left")
 result_label.pack(pady=10, fill="both", expand=True)
 
 root.mainloop()
