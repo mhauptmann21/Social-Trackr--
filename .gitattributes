@@ -4,78 +4,87 @@ from tkinter import ttk, messagebox
 import requests
 import breezypythongui
 
-# Replace with your access token
+# access token
 ACCESS_TOKEN = "EAAPlSSixUWABO008nY1xRO2oHcEyLKNaGzLynI1V9GGBikrgNiU30euzONa8LiTZCpInVegzKpO52ZA18FEs0kV2nHgX3WJHIcFMZB7TxJt4oFJ0oKedqAtZCm3Q4pklISvjkZAZCnl7zOpR1GIcJ5Coru1ynZABdZBdPMTJ5Um2ZCT5qK9p8DPZCymh6VVZCQqFw7QkXTg6CY2NWR7U3daXl8y4BHUvVswkrG30olb4ZAh2eEC3RJPAUZC58cVe1IdhXpOGmLG9hY4kZD"
 
-def fetch_facebook_data():
-    user_id = entry.get()
-    if not user_id:
-        messagebox.showerror("Error", "Please enter a Facebook User ID!")
-        return
-
-    # Graph API URL to fetch user data
-    url = f"https://graph.facebook.com/v12.0/{user_id}"
-    params = {
-        "fields": "name,id,friends.limit(1).summary(true),posts.limit(5){message,created_time}",
-        "access_token": ACCESS_TOKEN,
-    }
-
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()  # Raise exception for bad status codes
-        data = response.json()
-
-        # Display user stats
-        name = data.get("name", "N/A")
-        user_id = data.get("id", "N/A")
-        friends_count = data.get("friends", {}).get("summary", {}).get("total_count", "N/A")
-        posts = data.get("posts", {}).get("data", [])
-
-        posts_text = "\n".join(
-            [f"- {post['message'][:50]}... ({post['created_time']})" for post in posts if "message" in post]
-        )
-
-        result_text = (
-            f"Name: {name}\n"
-            f"User ID: {user_id}\n"
-            f"Friends: {friends_count}\n\n"
-            f"Recent Posts:\n{posts_text if posts else 'No recent posts available.'}"
-        )
-        result_label.config(text=result_text)
-    except requests.exceptions.RequestException as e:
-        messagebox.showerror("Error", f"Failed to fetch data: {e}")
-    except KeyError:
-        messagebox.showerror("Error", "Invalid response from API. Check User ID or token.")
-
 # GUI setup
-root = tk.Tk()
-root.title("Facebook Account Stats")
-root.geometry("500x400")
+main = tk.Tk()
+main.title("Social Trackr")
+main.geometry("500x400")
 
-frame = ttk.Frame(root, padding=10)
+frame = ttk.Frame(main, padding=10)
 frame.pack(fill="both", expand=True)
 
-# User input
-label = ttk.Label(frame, text="Enter User ID:")
+label = ttk.Label(frame, text="Welcome to Social Trackr!!")
 label.pack(pady=5)
 
-entry = ttk.Entry(frame, width=30)
-entry.pack(pady=5)
+def create_new_window(event=None):
+    selected_option = Combo.get()  # Get the selected value from the combobox
+    new_window = tk.Toplevel(main)
+    new_window.title(selected_option) 
 
-"""menuBar = ttk.Menubutton(frame, text="More...")
-menuBar.pack(pady=10)"""
+    def fetch_facebook_data():
+        user_id = entry.get()
+        if not user_id:
+            messagebox.showerror("Error", "Please enter a Facebook User ID!")
+            return
+
+        # Graph API URL to fetch user data
+        url = f"https://graph.facebook.com/v12.0/{user_id}"
+        params = {
+            "fields": "name,id,friends.limit(1).summary(true),posts.limit(5){message,created_time}",
+            "access_token": ACCESS_TOKEN,
+        }
+
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # Raise exception for bad status codes
+            data = response.json()
+
+            # Display user stats
+            name = data.get("name", "N/A")
+            user_id = data.get("id", "N/A")
+            friends_count = data.get("friends", {}).get("summary", {}).get("total_count", "N/A")
+            posts = data.get("posts", {}).get("data", [])
+
+            posts_text = "\n".join(
+                [f"- {post['message'][:50]}... ({post['created_time']})" for post in posts if "message" in post]
+            )
+
+            result_text = (
+                f"Name: {name}\n"
+                f"User ID: {user_id}\n"
+                f"Friends: {friends_count}\n\n"
+                f"Recent Posts:\n{posts_text if posts else 'No recent posts available.'}"
+            )
+            result_label.config(text=result_text)
+        except requests.exceptions.RequestException as e:
+            messagebox.showerror("Error", f"Failed to fetch data: {e}")
+        except KeyError:
+            messagebox.showerror("Error", "Invalid response from API. Check User ID or token.")
+
+    entry = ttk.Entry(frame, width=30)
+    entry.pack(pady=5)
+
+    if selected_option == "Facebook":
+        label = tk.Label(new_window, text=f"Enter your User ID: ", font=("Helvetica", 14))
+        label.pack(pady=50)
+        
+
+    new_window.result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 30), wraplength=450, justify="left")
+    new_window.result_label.pack(pady=10, fill="both", expand=True)
+
+    fetch_button = ttk.Button(new_window, text="Fetch Data", command=fetch_data)
+    fetch_button.pack(pady=10)
 frame.pack()
 langs = ["Facebook", "Instagram", "Tiktok",
    "X"]
 Combo = ttk.Combobox(frame, values = langs)
+Combo.bind("<<ComboboxSelected>>", lambda event: create_new_window())
 Combo.set("Pick an Option")
 Combo.pack(padx = 5, pady = 5)
 
-fetch_button = ttk.Button(frame, text="Fetch Data", command=fetch_facebook_data)
-fetch_button.pack(pady=10)
-
 # Result display
-result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 30), wraplength=450, justify="left")
-result_label.pack(pady=10, fill="both", expand=True)
 
-root.mainloop()
+
+main.mainloop()
