@@ -1,90 +1,113 @@
-
 import tkinter as tk
 from tkinter import ttk, messagebox
-import requests
-import breezypythongui
+from PIL import Image, ImageTk
 
-# access token
-ACCESS_TOKEN = "EAAPlSSixUWABO008nY1xRO2oHcEyLKNaGzLynI1V9GGBikrgNiU30euzONa8LiTZCpInVegzKpO52ZA18FEs0kV2nHgX3WJHIcFMZB7TxJt4oFJ0oKedqAtZCm3Q4pklISvjkZAZCnl7zOpR1GIcJ5Coru1ynZABdZBdPMTJ5Um2ZCT5qK9p8DPZCymh6VVZCQqFw7QkXTg6CY2NWR7U3daXl8y4BHUvVswkrG30olb4ZAh2eEC3RJPAUZC58cVe1IdhXpOGmLG9hY4kZD"
 
-# GUI setup
-main = tk.Tk()
-main.title("Social Trackr")
-main.geometry("500x400")
+class SocialTrackrApp:
+    def __init__(self, root):
+        """Initialize the main application window."""
+        self.root = root
+        self.root.title("Social Trackr")
+        self.root.geometry("600x500")
+        
+        # Welcome Screen
+        self.frame_main = ttk.Frame(root, padding=20)
+        self.frame_main.pack(fill="both", expand=True)
 
-frame = ttk.Frame(main, padding=10)
-frame.pack(fill="both", expand=True)
+        label_welcome = ttk.Label(self.frame_main, text="Welcome to Social Trackr!", font=("Helvetica", 18))
+        label_welcome.pack(pady=10)
 
-label = ttk.Label(frame, text="Welcome to Social Trackr!!")
-label.pack(pady=5)
+        label_instruction = ttk.Label(
+            self.frame_main,
+            text="Choose a platform below to track data:",
+            font=("Helvetica", 12),
+        )
+        label_instruction.pack(pady=5)
 
-def create_new_window(event=None):
-    selected_option = Combo.get()  # Get the selected value from the combobox
-    new_window = tk.Toplevel(main)
-    new_window.title(selected_option) 
+        self.platforms = ["Facebook", "Instagram", "TikTok", "X (Twitter)"]
+        self.combo_platform = ttk.Combobox(self.frame_main, values=self.platforms, state="readonly")
+        self.combo_platform.set("Pick a Platform")
+        self.combo_platform.pack(pady=10)
 
-    def fetch_facebook_data():
-        user_id = entry.get()
-        if not user_id:
-            messagebox.showerror("Error", "Please enter a Facebook User ID!")
+        btn_next = ttk.Button(self.frame_main, text="Proceed", command=self.open_platform_window)
+        btn_next.pack(pady=5)
+
+        btn_exit = ttk.Button(self.frame_main, text="Exit", command=self.exit_app)
+        btn_exit.pack(pady=5)
+
+        # Add Image
+        self.load_image()
+
+    def load_image(self):
+        """Load and display an image in the main window."""
+        image = Image.open("social_media.jpg")
+        image = image.resize((300, 200), Image.ANTIALIAS)
+        self.img = ImageTk.PhotoImage(image)
+
+        label_image = ttk.Label(self.frame_main, image=self.img)
+        label_image.image = self.img  # Keep reference to avoid garbage collection
+        label_image.pack(pady=10)
+
+    def open_platform_window(self):
+        """Open a new window based on the selected platform."""
+        platform = self.combo_platform.get()
+
+        if platform not in self.platforms:
+            messagebox.showerror("Error", "Please select a valid platform!")
             return
 
-        # Graph API URL to fetch user data
-        url = f"https://graph.facebook.com/v12.0/{user_id}"
-        params = {
-            "fields": "name,id,friends.limit(1).summary(true),posts.limit(5){message,created_time}",
-            "access_token": ACCESS_TOKEN,
-        }
+        new_window = tk.Toplevel(self.root)
+        new_window.title(f"{platform} Data Tracker")
+        new_window.geometry("600x500")
 
-        try:
-            response = requests.get(url, params=params)
-            response.raise_for_status()  # Raise exception for bad status codes
-            data = response.json()
+        # Labels
+        label_header = ttk.Label(new_window, text=f"Track {platform} Data", font=("Helvetica", 16))
+        label_header.pack(pady=10)
 
-            # Display user stats
-            name = data.get("name", "N/A")
-            user_id = data.get("id", "N/A")
-            friends_count = data.get("friends", {}).get("summary", {}).get("total_count", "N/A")
-            posts = data.get("posts", {}).get("data", [])
+        label_instruction = ttk.Label(
+            new_window,
+            text="Enter your User ID to retrieve data:",
+            font=("Helvetica", 12),
+        )
+        label_instruction.pack(pady=5)
 
-            posts_text = "\n".join(
-                [f"- {post['message'][:50]}... ({post['created_time']})" for post in posts if "message" in post]
-            )
+        # Entry Box
+        entry_user_id = ttk.Entry(new_window, width=30)
+        entry_user_id.pack(pady=5)
 
-            result_text = (
-                f"Name: {name}\n"
-                f"User ID: {user_id}\n"
-                f"Friends: {friends_count}\n\n"
-                f"Recent Posts:\n{posts_text if posts else 'No recent posts available.'}"
-            )
-            result_label.config(text=result_text)
-        except requests.exceptions.RequestException as e:
-            messagebox.showerror("Error", f"Failed to fetch data: {e}")
-        except KeyError:
-            messagebox.showerror("Error", "Invalid response from API. Check User ID or token.")
+        # Buttons
+        btn_fetch = ttk.Button(
+            new_window,
+            text="Fetch Data",
+            command=lambda: self.fetch_data(platform, entry_user_id.get(), new_window),
+        )
+        btn_fetch.pack(pady=5)
 
-    entry = ttk.Entry(frame, width=30)
-    entry.pack(pady=5)
+        btn_back = ttk.Button(new_window, text="Back", command=new_window.destroy)
+        btn_back.pack(pady=5)
 
-    if selected_option == "Facebook":
-        label = tk.Label(new_window, text=f"Enter your User ID: ", font=("Helvetica", 14))
-        label.pack(pady=50)
-        
+    def fetch_data(self, platform, user_id, window):
+        """Simulate data retrieval for the selected platform."""
+        if not user_id.strip():
+            messagebox.showerror("Error", "User ID cannot be empty!")
+            return
 
-    new_window.result_label = tk.Label(frame, text="", bg="#f0f4f8", font=("Helvetica", 30), wraplength=450, justify="left")
-    new_window.result_label.pack(pady=10, fill="both", expand=True)
+        if not user_id.isalnum():
+            messagebox.showerror("Error", "Invalid User ID format!")
+            return
 
-    fetch_button = ttk.Button(new_window, text="Fetch Data", command=fetch_data)
-    fetch_button.pack(pady=10)
-frame.pack()
-langs = ["Facebook", "Instagram", "Tiktok",
-   "X"]
-Combo = ttk.Combobox(frame, values = langs)
-Combo.bind("<<ComboboxSelected>>", lambda event: create_new_window())
-Combo.set("Pick an Option")
-Combo.pack(padx = 5, pady = 5)
+        # Simulated data fetching (replace with actual API calls if needed)
+        result = f"Data fetched for {platform} User ID: {user_id}\n\n[Sample Data Display]"
+        messagebox.showinfo(f"{platform} Data", result)
 
-# Result display
+    def exit_app(self):
+        """Exit the application."""
+        confirm = messagebox.askyesno("Exit", "Are you sure you want to exit?")
+        if confirm:
+            self.root.destroy()
 
 
-main.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = SocialTrackrApp(root)
+    root.mainloop()
