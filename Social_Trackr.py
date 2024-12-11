@@ -7,7 +7,7 @@ class SocialTrackrApp:
     ACCESS_TOKEN = "EAAPlSSixUWABO1U3lBVTtjfO05ciNOIMqpPN2oTMnFbtBypDIyi4nMaHCPVsChAFZCkaZAYuSxshdnkjd2s8Jnzm8glvs64k0Rp7KbPgL3wJ7yk1Qoq17vWi0eZBYbJCYw1Rz2aoIJV61yLPXFm3iVGj0jznQvZBz3zuTaR6nzMKUuesiStNvm8JLaNr6I2iIQZDZD"
 
     def __init__(self, root):
-        """Initialize the main application window."""
+        # Initialize the main application window
         self.root = root
         self.root.title("Social Trackr")
         self.root.geometry("600x500")
@@ -16,7 +16,7 @@ class SocialTrackrApp:
         self.bg_image = Image.open("background.jpg").resize((600, 500), Image.Resampling.LANCZOS)
         self.bg_photo = ImageTk.PhotoImage(self.bg_image)
         self.bg_label = tk.Label(root, image=self.bg_photo)
-        self.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.bg_label.place(x=30, y=30, relwidth=1, relheight=1)
         
         # Welcome Screen
         self.frame_main = ttk.Frame(root, padding=20)
@@ -82,6 +82,7 @@ class SocialTrackrApp:
                 # Open a window for results
                 self.show_results_window(platform, result_text)
 
+            # Necessary specific error messages
             except requests.exceptions.RequestException as e:
                 messagebox.showerror("Error", f"Failed to fetch data: {e}")
 
@@ -112,13 +113,13 @@ class SocialTrackrApp:
         btn_close.pack(pady=5)
 
     def open_platform_window(self):
-        """Open a new window based on the selected platform."""
+        # Open a new window based on the selected platform.
         platform = self.combo_platform.get()
 
         if platform not in self.platforms:
             messagebox.showerror("Error", "Please select a valid platform!")
             return
-
+        
         new_window = tk.Toplevel(self.root)
         new_window.title(f"{platform} Data Tracker")
         new_window.geometry("600x500")
