@@ -132,13 +132,16 @@ class SocialTrackrApp:
         new_window.title(f"{platform} Data Tracker")
         new_window.geometry("600x500")
 
+        # Opens image for the Facebook logo
         try:
             facebook_image = Image.open("facebook-logo.png").resize((150, 100), Image.Resampling.LANCZOS)
             facebook_photo = ImageTk.PhotoImage(facebook_image)
+        # Creates an error message if the image is unable to load
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load image: {e}")
             facebook_photo = None
 
+        # Opens image for the Instagram logo
         try:
             instagram_image = Image.open("instagram_icon.png").resize((100, 100), Image.Resampling.LANCZOS)
             instagram_photo = ImageTk.PhotoImage(instagram_image)
@@ -146,6 +149,7 @@ class SocialTrackrApp:
             messagebox.showerror("Error", f"Failed to load image: {e}")
             instagram_photo = None
 
+        # Opens image for the Youtube logo
         try:
             youtube_image = Image.open("youtube-logo.png").resize((150, 100), Image.Resampling.LANCZOS)
             youtube_photo = ImageTk.PhotoImage(youtube_image)
@@ -153,6 +157,7 @@ class SocialTrackrApp:
             messagebox.showerror("Error", f"Failed to load image: {e}")
             youtube_photo = None
 
+        # Opens image for the Twitter logo
         try:
             twitter_image = Image.open("twitter-logo.png").resize((100, 100), Image.Resampling.LANCZOS)
             twitter_photo = ImageTk.PhotoImage(twitter_image)
