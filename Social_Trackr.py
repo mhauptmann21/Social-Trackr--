@@ -13,18 +13,20 @@ class SocialTrackrApp:
         self.root.geometry("600x500")
 
         # Load background image
-        self.bg_image = Image.open("background.jpg").resize((600, 500), Image.Resampling.LANCZOS)
+        self.bg_image = Image.open("lights.png").resize((600, 100), Image.Resampling.LANCZOS)
         self.bg_photo = ImageTk.PhotoImage(self.bg_image)
         self.bg_label = tk.Label(root, image=self.bg_photo)
-        self.bg_label.place(x=30, y=30, relwidth=1, relheight=1)
+        self.bg_label.pack(fill="both", expand=True)
         
         # Welcome Screen
         self.frame_main = ttk.Frame(root, padding=20)
         self.frame_main.pack(fill="both", expand=True)
 
+        # Label for the first window
         label_welcome = ttk.Label(self.frame_main, text="Welcome to Social Trackr!", font=("Helvetica", 18))
         label_welcome.pack(pady=10)
 
+        # Label to direct users to pick a platform
         label_instruction = ttk.Label(
             self.frame_main,
             text="Choose a platform below to track data:",
@@ -32,19 +34,23 @@ class SocialTrackrApp:
         )
         label_instruction.pack(pady=5)
 
+        # Set the specific social media platforms
         self.platforms = ["Facebook", "Instagram", "Youtube", "X (Twitter)"]
         self.combo_platform = ttk.Combobox(self.frame_main, values=self.platforms, state="readonly")
         self.combo_platform.set("Pick a Platform")
         self.combo_platform.pack(pady=10)
 
+        # Create a button to take user to the next window for the selected platform
         btn_next = ttk.Button(self.frame_main, text="Proceed", command=self.open_platform_window)
         btn_next.pack(pady=5)
 
+        # Create an exit button
         btn_exit = ttk.Button(self.frame_main, text="Exit", command=self.exit_app)
         btn_exit.pack(pady=5)
 
+    # Function that fetches the data for the selected platform
     def fetch_data(self, platform, user_id, result_label):
-        # Fetch data based on user inpu5 and update the result label
+        # Fetch data based on user input and update the result label
         if not user_id:
             messagebox.showerror("Error", "Please enter a User ID!")
             return
@@ -97,6 +103,7 @@ class SocialTrackrApp:
         results_window.title(f"{platform} Data Results")
         results_window.geometry("600x400")
 
+        # Label for data results window
         label_header = ttk.Label(
             results_window, text=f"{platform} Data Results", font=("Helvetica", 16), anchor="center"
         )
@@ -116,6 +123,7 @@ class SocialTrackrApp:
         # Open a new window based on the selected platform.
         platform = self.combo_platform.get()
 
+        # Error message for if the platform selected is not found
         if platform not in self.platforms:
             messagebox.showerror("Error", "Please select a valid platform!")
             return
@@ -123,6 +131,52 @@ class SocialTrackrApp:
         new_window = tk.Toplevel(self.root)
         new_window.title(f"{platform} Data Tracker")
         new_window.geometry("600x500")
+
+        try:
+            facebook_image = Image.open("facebook-logo.png").resize((150, 100), Image.Resampling.LANCZOS)
+            facebook_photo = ImageTk.PhotoImage(facebook_image)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load image: {e}")
+            facebook_photo = None
+
+        try:
+            instagram_image = Image.open("instagram_icon.png").resize((100, 100), Image.Resampling.LANCZOS)
+            instagram_photo = ImageTk.PhotoImage(instagram_image)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load image: {e}")
+            instagram_photo = None
+
+        try:
+            youtube_image = Image.open("youtube-logo.png").resize((150, 100), Image.Resampling.LANCZOS)
+            youtube_photo = ImageTk.PhotoImage(youtube_image)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load image: {e}")
+            youtube_photo = None
+
+        try:
+            twitter_image = Image.open("twitter-logo.png").resize((100, 100), Image.Resampling.LANCZOS)
+            twitter_photo = ImageTk.PhotoImage(twitter_image)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load image: {e}")
+            twitter_photo = None
+
+        # Display the images in the different platform windows
+        if platform == "Facebook" and facebook_photo:
+            label_image = tk.Label(new_window, image=facebook_photo)
+            label_image.image = facebook_photo  # Prevent garbage collection
+            label_image.pack(pady=10)
+        elif platform == "Instagram" and instagram_photo:
+            label_image = tk.Label(new_window, image=instagram_photo)
+            label_image.image = instagram_photo
+            label_image.pack(pady=10)
+        elif platform == "Youtube" and youtube_photo:
+            label_image = tk.Label(new_window, image=youtube_photo)
+            label_image.image = youtube_photo
+            label_image.pack(pady=10)
+        elif platform == "X (Twitter)" and twitter_photo:
+            label_image = tk.Label(new_window, image=twitter_photo)
+            label_image.image = twitter_photo
+            label_image.pack(pady=10)
 
         # Labels
         label_header = ttk.Label(new_window, text=f"Track {platform} Data", font=("Helvetica", 16))
@@ -151,6 +205,7 @@ class SocialTrackrApp:
         )
         btn_fetch.pack(pady=5)
 
+        # Creates button to go to the previous window
         btn_back = ttk.Button(new_window, text="Back", command=new_window.destroy)
         btn_back.pack(pady=5)
 
